@@ -76,7 +76,7 @@ int main(void)
 {
     /* Define the init structure for the output LED pin*/
     gpio_pin_config_t led_config = {
-        kGPIO_DigitalOutput, 0,
+            kGPIO_DigitalOutput, 0,
     };
 
     /* Board pin init */
@@ -93,10 +93,17 @@ int main(void)
         }
     }
 
+    g_systickCounter = 500;
+
     while (1)
     {
+        if(g_systickCounter == 0)
+        {
+            g_systickCounter = 500;
+            GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_GPIO_PIN);
+        }
+
         /* Delay 1000 ms */
-        SysTick_DelayTicks(1000U);
-        GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_GPIO_PIN);
+        //SysTick_DelayTicks(1000U);
     }
 }
