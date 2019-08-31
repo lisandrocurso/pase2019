@@ -39,7 +39,9 @@
  * Definitions
  ******************************************************************************/
 #define BOARD_LED_GPIO BOARD_LED_RED_GPIO
-#define BOARD_LED_GPIO_PIN BOARD_LED_RED_GPIO_PIN
+#define BOARD_LED_GPIO2 BOARD_LED_GREEN_GPIO
+#define BOARD_LED_RED BOARD_LED_RED_GPIO_PIN
+#define BOARD_LED_GREEN BOARD_LED_GREEN_GPIO_PIN
 
 /*******************************************************************************
  * Prototypes
@@ -48,23 +50,28 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-volatile uint32_t g_systickCounter;
+volatile uint32_t g_systickCounterA;
+volatile uint32_t g_systickCounterB;
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
 void SysTick_Handler(void)
 {
-    if (g_systickCounter != 0U)
+    if (g_systickCounterA != 0U)
+    {
+        g_systickCounterA--;
+    }
+    if (g_systickCounterB != 0U)
     { 
-        g_systickCounter--;
+        g_systickCounterB--;
     }
 }
 
 void SysTick_DelayTicks(uint32_t n)
 {
-    g_systickCounter = n;
-    while(g_systickCounter != 0U)
+    g_systickCounterA = n;
+    while(g_systickCounterA != 0U)
     {
     }
 }
@@ -83,7 +90,8 @@ int main(void)
     BOARD_InitPins();
 
     /* Init output LED GPIO. */
-    GPIO_PinInit(BOARD_LED_GPIO, BOARD_LED_GPIO_PIN, &led_config);
+    GPIO_PinInit(BOARD_LED_GPIO, BOARD_LED_RED, &led_config);
+    GPIO_PinInit(BOARD_LED_GPIO2, BOARD_LED_GREEN, &led_config);
 
     /* Set systick reload value to generate 1ms interrupt */
     if(SysTick_Config(SystemCoreClock / 1000U))
@@ -93,16 +101,21 @@ int main(void)
         }
     }
 
-    g_systickCounter = 500;
+    g_systickCounterA = 500;
+    g_systickCounterB = 250;
 
     while (1)
     {
-        if(g_systickCounter == 0)
+        if(g_systickCounterA == 0)
         {
-            g_systickCounter = 500;
-            GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_GPIO_PIN);
+            g_systickCounterA = 500;
+            GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_RED);
         }
-
+        if(g_systickCounterB == 0)
+        {
+            g_systickCounterB = 250;
+            GPIO_PortToggle(BOARD_LED_GPIO2, 1u << BOARD_LED_GREEN);
+        }
         /* Delay 1000 ms */
         //SysTick_DelayTicks(1000U);
     }

@@ -73,9 +73,10 @@ BOARD_InitPins:
  *
  *END**************************************************************************/
 void BOARD_InitPins(void) {
-  CLOCK_EnableClock(kCLOCK_PortE);                           /* Port E Clock Gate Control: Clock enabled */
-
+  CLOCK_EnableClock(kCLOCK_PortE);                         /* Port E Clock Gate Control: Clock enabled */
+  CLOCK_EnableClock(kCLOCK_PortD);
   PORT_SetPinMux(PORTE, PIN29_IDX, kPORT_MuxAsGpio);         /* PORTE29 (pin 26) is configured as PTE29 */
+  PORT_SetPinMux(PORTD, 5u, kPORT_MuxAsGpio);
 }
 
 /*******************************************************************************
